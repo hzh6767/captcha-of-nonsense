@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="An offline CAPTCHA that proves almost nothing through increasingly absurd emoji questions.">
+  <meta name="theme-color" content="#11151d">
+  <title>CAPTCHA of Nonsense</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <main class="shell">
+    <header class="masthead">
+      <div>
+        <p class="eyebrow">HUMAN VERIFICATION LAB / CASE 404</p>
+        <h1>CAPTCHA<br>of Nonsense</h1>
+      </div>
+      <div class="status" aria-label="System status"><i></i> confidently uncertain</div>
+    </header>
+
+    <section class="card" aria-labelledby="challenge-title">
+      <div class="card-top">
+        <span id="round-label">TEST 01 / 05</span>
+        <span id="score-label">HUMANITY: 50%</span>
+      </div>
+
+      <div class="challenge-copy">
+        <p class="mini-label">Select exactly one answer</p>
+        <h2 id="challenge-title">Which object looks most likely to remember your password?</h2>
+        <p id="challenge-note">Our imaginary neural network will judge your vibes, not your logic.</p>
+      </div>
+
+      <div id="answer-grid" class="answer-grid" role="group" aria-label="Possible answers"></div>
+
+      <div class="actions">
+        <button id="verify" class="primary" type="button" disabled>VERIFY MY HUMANITY</button>
+        <button id="skip" class="secondary" type="button">THIS QUESTION IS HAUNTED</button>
+      </div>
+
+      <div id="result" class="result" aria-live="polite">
+        <strong>Awaiting a suspiciously human decision.</strong>
+        <span>Accuracy is optional. Commitment is mandatory.</span>
+      </div>
+    </section>
+
+    <section class="meter-card" aria-label="Humanity meter">
+      <div class="meter-copy">
+        <span>PROBABILITY OF BEING A HUMAN</span>
+        <strong id="meter-value">50%</strong>
+      </div>
+      <div class="meter" aria-hidden="true"><span id="meter-fill"></span></div>
+      <div class="meter-scale"><span>TOASTER</span><span>HUMAN-ISH</span><span>DEFINITELY A WIZARD</span></div>
+    </section>
+
+    <footer>
+      <span>NO COOKIES · NO TRACKING · NO USEFUL CONCLUSIONS</span>
+      <button id="reset" type="button">RESET EXPERIMENT</button>
+    </footer>
+  </main>
+  <script src="app.js"></script>
+</body>
+</html>
