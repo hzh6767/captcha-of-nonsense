@@ -1,43 +1,21 @@
 (() => {
   "use strict";
 
-  const challenges = [
-    {
-      question: "Which object looks most likely to remember your password?",
-      note: "Our imaginary neural network will judge your vibes, not your logic.",
-      answers: [["🧦", "left sock"], ["🪴", "office fern"], ["🥄", "small spoon"], ["🦆", "local duck"], ["🧊", "ice cube"], ["📎", "paperclip"]],
-      preferred: 1,
-      reason: "The fern has witnessed every password reset since 2019."
-    },
-    {
-      question: "Choose the item that would make the best project manager.",
-      note: "Leadership experience is measured in unexplained confidence.",
-      answers: [["🍞", "toast"], ["🦀", "crab"], ["🛒", "cart"], ["🪩", "disco ball"], ["🧱", "brick"], ["🐌", "snail"]],
-      preferred: 3,
-      reason: "The disco ball distributes attention evenly and schedules excellent retrospectives."
-    },
-    {
-      question: "Which one is secretly running the internet?",
-      note: "Please ignore anything you learned in computer science.",
-      answers: [["🐈", "cat"], ["🥔", "potato"], ["🧙", "wizard"], ["📠", "fax"], ["🪼", "jellyfish"], ["🗿", "statue"]],
-      preferred: 1,
-      reason: "The potato has redundant eyes and excellent uptime."
-    },
-    {
-      question: "Identify the most emotionally available rectangle.",
-      note: "Shape recognition is easy. Emotional geometry is not.",
-      answers: [["🚪", "door"], ["📕", "book"], ["🧈", "butter"], ["📱", "phone"], ["🧱", "brick"], ["🎟️", "ticket"]],
-      preferred: 2,
-      reason: "Butter is soft, present, and willing to change."
-    },
-    {
-      question: "Pick the creature most qualified to review your browser history.",
-      note: "There is no correct answer, but there is an extremely judgmental one.",
-      answers: [["🦉", "owl"], ["🐙", "octopus"], ["🐝", "bee"], ["🦝", "raccoon"], ["🐡", "pufferfish"], ["🦭", "seal"]],
-      preferred: 3,
-      reason: "The raccoon understands questionable late-night decisions."
-    }
-  ];
+  const {
+    challenges,
+    START_HUMANITY,
+    nextRound,
+    isApproved,
+    applyAnswer,
+    applySkip,
+    meterValue,
+    preferredLabel
+  } = globalThis.NonsenseScoring;
+
+  const ANSWER_HEADLINE = "Awaiting a suspiciously human decision.";
+  const ANSWER_COPY = "Accuracy is optional. Commitment is mandatory.";
+  const RECORDED_HEADLINE = "Choice recorded. The machine is pretending to think.";
+  const RECORDED_COPY = "Press verify when your answer feels unnecessarily final.";
 
   const grid = document.querySelector("#answer-grid");
   const title = document.querySelector("#challenge-title");
@@ -46,10 +24,11 @@
   const result = document.querySelector("#result");
   const roundLabel = document.querySelector("#round-label");
   const scoreLabel = document.querySelector("#score-label");
-  const meterValue = document.querySelector("#meter-value");
+  const meterNumber = document.querySelector("#meter-value");
   const meterFill = document.querySelector("#meter-fill");
+  const skip = document.querySelector("#skip");
   let round = 0;
-  let humanity = 50;
+  let humanity = START_HUMANITY;
   let selected = null;
   let locked = false;
 
@@ -64,10 +43,64 @@
   }
 
   function updateMeter() {
-    const value = Math.max(4, Math.min(99, humanity));
+    const value = meterValue(humanity);
     scoreLabel.textContent = `HUMANITY: ${value}%`;
-    meterValue.textContent = `${value}%`;
+    meterNumber.textContent = `${value}%`;
     meterFill.style.width = `${value}%`;
+  }
+
+  function paintSelection(index) {
+    [...grid.children].forEach((item, itemIndex) => {
+      const active = itemIndex === index;
+      item.classList.toggle("selected", active);
+      item.setAttribute("aria-checked", String(active));
+      item.tabIndex = active ? 0 : -1;
+    });
+  }
+
+  function choose(index, focusChosen = false) {
+    if (locked) return;
+    selected = index;
+    paintSelection(index);
+    if (focusChosen) grid.children[index].focus();
+    verify.disabled = false;
+    setResult(RECORDED_HEADLINE, RECORDED_COPY);
+  }
+
+  function onAnswerKeydown(event) {
+    if (locked) return;
+    const keys = ["ArrowRight", "ArrowDown", "ArrowLeft", "ArrowUp", "Home", "End"];
+    if (keys.indexOf(event.key) === -1) return;
+    event.preventDefault();
+    const current = Number(event.currentTarget.dataset.index);
+    const last = grid.children.length - 1;
+    let target = current;
+    if (event.key === "ArrowRight" || event.key === "ArrowDown") target = current === last ? 0 : current + 1;
+    else if (event.key === "ArrowLeft" || event.key === "ArrowUp") target = current === 0 ? last : current - 1;
+    else if (event.key === "Home") target = 0;
+    else if (event.key === "End") target = last;
+    choose(target, true);
+  }
+
+  function createAnswer([emoji, label], index) {
+    const button = document.createElement("button");
+    const icon = document.createElement("span");
+    const text = document.createElement("span");
+    button.type = "button";
+    button.className = "answer";
+    button.dataset.index = String(index);
+    button.setAttribute("role", "radio");
+    button.setAttribute("aria-checked", "false");
+    button.tabIndex = -1;
+    icon.className = "emoji";
+    icon.setAttribute("aria-hidden", "true");
+    icon.textContent = emoji;
+    text.className = "label";
+    text.textContent = label;
+    button.append(icon, text);
+    button.addEventListener("click", () => choose(index));
+    button.addEventListener("keydown", onAnswerKeydown);
+    return button;
   }
 
   function renderChallenge() {
@@ -78,39 +111,22 @@
     note.textContent = challenge.note;
     roundLabel.textContent = `TEST ${String(round + 1).padStart(2, "0")} / ${String(challenges.length).padStart(2, "0")}`;
     verify.disabled = true;
+    skip.disabled = false;
     verify.textContent = "VERIFY MY HUMANITY";
     grid.replaceChildren();
 
-    challenge.answers.forEach(([emoji, label], index) => {
-      const button = document.createElement("button");
-      const icon = document.createElement("span");
-      const text = document.createElement("span");
-      button.type = "button";
-      button.className = "answer";
-      button.setAttribute("aria-pressed", "false");
-      icon.className = "emoji";
-      icon.textContent = emoji;
-      text.className = "label";
-      text.textContent = label;
-      button.append(icon, text);
-      button.addEventListener("click", () => {
-        if (locked) return;
-        selected = index;
-        [...grid.children].forEach((item, itemIndex) => {
-          const active = itemIndex === index;
-          item.classList.toggle("selected", active);
-          item.setAttribute("aria-pressed", String(active));
-        });
-        verify.disabled = false;
-        setResult("Choice recorded. The machine is pretending to think.", "Press verify when your answer feels unnecessarily final.");
-      });
-      grid.append(button);
+    challenge.answers.forEach((answer, index) => {
+      grid.append(createAnswer(answer, index));
     });
+    if (grid.children.length > 0) grid.children[0].tabIndex = 0;
+
+    setResult(ANSWER_HEADLINE, ANSWER_COPY);
   }
 
   function advance() {
-    round = (round + 1) % challenges.length;
+    round = nextRound(round, challenges.length);
     renderChallenge();
+    title.focus();
   }
 
   verify.addEventListener("click", () => {
@@ -121,19 +137,23 @@
     }
     locked = true;
     const challenge = challenges[round];
-    const approved = selected === challenge.preferred;
-    humanity += approved ? 11 : -4;
+    const approved = isApproved(challenge, selected);
+    humanity = applyAnswer(humanity, approved);
     updateMeter();
+    [...grid.children].forEach((item) => {
+      item.disabled = true;
+    });
+    skip.disabled = true;
     verify.textContent = round === challenges.length - 1 ? "LOOP THE EXPERIMENT" : "NEXT NONSENSE TEST";
     setResult(
       approved ? "VERIFIED: suspiciously human." : "INCONCLUSIVE: possibly a very thoughtful appliance.",
-      approved ? challenge.reason : `The model preferred ${challenge.answers[challenge.preferred][1]}. ${challenge.reason}`,
+      approved ? challenge.reason : `The model preferred ${preferredLabel(challenge)}. ${challenge.reason}`,
       approved
     );
   });
 
-  document.querySelector("#skip").addEventListener("click", () => {
-    humanity -= 2;
+  skip.addEventListener("click", () => {
+    humanity = applySkip(humanity);
     updateMeter();
     advance();
     setResult("Question safely exorcised.", "Skipping is a deeply human response to bad metrics.", true);
@@ -141,12 +161,13 @@
 
   document.querySelector("#reset").addEventListener("click", () => {
     round = 0;
-    humanity = 50;
+    humanity = START_HUMANITY;
     updateMeter();
     renderChallenge();
-    setResult("Awaiting a suspiciously human decision.", "Accuracy is optional. Commitment is mandatory.");
+    setResult(ANSWER_HEADLINE, ANSWER_COPY);
   });
 
+  title.tabIndex = -1;
   updateMeter();
   renderChallenge();
 })();

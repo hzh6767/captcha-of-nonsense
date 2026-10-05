@@ -61,9 +61,11 @@ h1 { margin: 0; font-size: clamp(2.8rem, 9vw, 6.4rem); line-height: .78; letter-
   cursor: pointer;
   transition: transform .14s, border-color .14s, background .14s;
 }
-.answer:hover { transform: translateY(-3px); border-color: var(--blue); }
+.answer:not(:disabled):hover { transform: translateY(-3px); border-color: var(--blue); }
 .answer:focus-visible, .primary:focus-visible, .secondary:focus-visible, footer button:focus-visible { outline: 3px solid var(--blue); outline-offset: 3px; }
 .answer.selected { border-color: var(--acid); background: #2b3828; box-shadow: inset 0 0 0 2px var(--acid); }
+.answer:disabled { cursor: default; color: var(--muted); }
+.answer:disabled .label { color: var(--muted); }
 .answer .emoji { display: block; font-size: 2.65rem; line-height: 1; margin-bottom: 11px; }
 .answer .label { color: var(--muted); font-size: .72rem; text-transform: uppercase; }
 
@@ -86,9 +88,9 @@ h1 { margin: 0; font-size: clamp(2.8rem, 9vw, 6.4rem); line-height: .78; letter-
 .meter-copy strong { color: var(--acid); font-size: 1.45rem; }
 .meter { height: 15px; margin: 14px 0 9px; border: 1px solid var(--line); background: #0e1218; }
 .meter span { display: block; width: 50%; height: 100%; background: linear-gradient(90deg, var(--pink), var(--blue), var(--acid)); transition: width .35s ease; }
-.meter-scale { color: #697386; font-size: .58rem; }
+.meter-scale { color: #a8b1c2; font-size: .7rem; font-weight: 600; }
 
-footer { display: flex; justify-content: space-between; gap: 20px; margin-top: 24px; color: #697386; font-size: .64rem; letter-spacing: .08em; }
+footer { display: flex; justify-content: space-between; gap: 20px; margin-top: 24px; color: #a8b1c2; font-size: .72rem; letter-spacing: .08em; }
 footer button { border: 0; padding: 0; color: var(--blue); background: transparent; cursor: pointer; }
 
 @media (max-width: 660px) {

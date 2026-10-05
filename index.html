@@ -15,7 +15,7 @@
         <p class="eyebrow">HUMAN VERIFICATION LAB / CASE 404</p>
         <h1>CAPTCHA<br>of Nonsense</h1>
       </div>
-      <div class="status" aria-label="System status"><i></i> confidently uncertain</div>
+      <div class="status"><i aria-hidden="true"></i> confidently uncertain</div>
     </header>
 
     <section class="card" aria-labelledby="challenge-title">
@@ -30,7 +30,7 @@
         <p id="challenge-note">Our imaginary neural network will judge your vibes, not your logic.</p>
       </div>
 
-      <div id="answer-grid" class="answer-grid" role="group" aria-label="Possible answers"></div>
+      <div id="answer-grid" class="answer-grid" role="radiogroup" aria-label="Possible answers"></div>
 
       <div class="actions">
         <button id="verify" class="primary" type="button" disabled>VERIFY MY HUMANITY</button>
@@ -44,7 +44,7 @@
     </section>
 
     <section class="meter-card" aria-label="Humanity meter">
-      <div class="meter-copy">
+      <div class="meter-copy" aria-live="polite" aria-atomic="true">
         <span>PROBABILITY OF BEING A HUMAN</span>
         <strong id="meter-value">50%</strong>
       </div>
@@ -57,6 +57,7 @@
       <button id="reset" type="button">RESET EXPERIMENT</button>
     </footer>
   </main>
+  <script src="scoring-jokes.js"></script>
   <script src="app.js"></script>
 </body>
 </html>

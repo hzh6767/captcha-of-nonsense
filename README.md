@@ -9,16 +9,34 @@ Open `index.html` in any modern browser. There is no build step, dependency, acc
 ## Features
 
 - Five rotating nonsense challenges
-- Keyboard-friendly answer controls
+- Single-select answer group exposed as a keyboard-navigable radio group
 - A completely unscientific humanity meter
 - Responsive layout and live result announcements
 - All content generated locally in the browser
 
+## Layout
+
+- `index.html` — markup and the two script tags
+- `scoring-jokes.js` — the challenge set and the pure scoring rules; also read by the tests
+- `app.js` — DOM wiring and event handlers
+- `style.css` — all styling
+- `tests/scoring.test.mjs` — assertions for the pure logic
+
 ## Check
 
 ```powershell
-node --check app.js
+npm run check
 ```
+
+Parses both scripts without executing them. It is the same check the CI workflow runs before the tests.
+
+## Test
+
+```powershell
+npm test
+```
+
+Runs the node test runner over `tests/scoring.test.mjs`. There are no dependencies to install.
 
 ## License
 
