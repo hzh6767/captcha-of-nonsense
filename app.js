@@ -164,7 +164,7 @@
     humanity = START_HUMANITY;
     updateMeter();
     renderChallenge();
-    setResult(ANSWER_HEADLINE, ANSWER_COPY);
+    title.focus();
   });
 
   title.tabIndex = -1;
