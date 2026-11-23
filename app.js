@@ -129,9 +129,15 @@
     title.focus();
   }
 
-  verify.addEventListener("click", () => {
+  verify.addEventListener("keydown", (event) => {
+    if (event.key === "Enter" && event.repeat) event.preventDefault();
+  });
+
+  verify.addEventListener("click", (event) => {
     if (selected === null) return;
     if (locked) {
+      // The second click of a double-click still belongs to the submission.
+      if (event.detail > 1) return;
       advance();
       return;
     }
